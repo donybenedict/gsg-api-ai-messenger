@@ -45,6 +45,16 @@ function processEvent(event) {
                 let responseData = response.result.fulfillment.data;
                 let action = response.result.action;
 
+                let responseContext = response.contexts[0];
+                /*var i;
+                var result = {} ;
+                for (i = 0; i < responseContext.length; i++) {
+                    var objectInResponse = responseContext[i]; 
+                    var nameIdentifier = objectInResponse.name;
+                    var eventIdentifier = objectInResponse.parameters.eventidentified;
+                    result[nameIdentifier] = eventIdentifier;
+                }*/
+
                 if (isDefined(responseData) && isDefined(responseData.facebook)) {
                     if (!Array.isArray(responseData.facebook)) {
                         try {
@@ -78,6 +88,8 @@ function processEvent(event) {
                     async.eachSeries(splittedText, (textPart, callback) => {
                         sendFBMessage(sender, {text: textPart}, callback);
                     });
+
+                    sendFBMessage(sender, "hello");
                 }
 
             }
