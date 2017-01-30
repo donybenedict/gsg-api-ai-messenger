@@ -43,6 +43,7 @@ function processEvent(event) {
             if (isDefined(response.result)) {
                 let responseText = response.result.fulfillment.speech;
                 let responseData = response.result.fulfillment.data;
+                let setContext = response.result.contexts[0].name;
                 let action = response.result.action;
 
                 if (isDefined(responseData) && isDefined(responseData.facebook)) {
@@ -78,9 +79,10 @@ function processEvent(event) {
                     async.eachSeries(splittedText, (textPart, callback) => {
                         sendFBMessage(sender, {text: textPart}, callback);
                     });
-                    sendFBMessage(sender, responseText, callback);
                 }
-
+                if (isDefined(responseText) && setContext == "schedule-given") {
+                    sendFBMessage(sender, responseText);
+                }
             }
         });
 
