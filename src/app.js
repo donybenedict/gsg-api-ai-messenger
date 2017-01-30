@@ -81,7 +81,7 @@ function processEvent(event) {
                         sendFBMessage(sender, {text: textPart}, callback);
                     });
                 }
-                if (isDefined(responseText) && isDefinded(setContext)) {
+                if (isDefined(responseText) && isDefined(setContext)) {
                     sendFBMessage(sender, blah);
                 }
             }
