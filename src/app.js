@@ -9,19 +9,7 @@ const JSONbig = require('json-bigint');
 const async = require('async');
 
 var pg = require('pg');
-
-//Establishing connection to pg
 pg.defaults.ssl = true;
-pg.connect(process.env.DATABASE_URL, function(err, client) {
-  if (err) throw err;
-  console.log('Connected to postgres! Getting schemas...');
-
-  client
-    .query('SELECT table_schema,table_name FROM information_schema.tables;')
-    .on('row', function(row) {
-      console.log(JSON.stringify(row));
-    });
-});
 
 const REST_PORT = (process.env.PORT || 5000);
 const APIAI_ACCESS_TOKEN = process.env.APIAI_ACCESS_TOKEN;
@@ -58,6 +46,9 @@ function processEvent(event) {
             if (isDefined(response.result)) {
                 let responseText = response.result.fulfillment.speech;
                 let responseData = response.result.fulfillment.data;
+                if (response.contexts[0].name == 'schedule-given') {  
+                  let detectedEvent = response.contexts[0].name;
+                }
                 let action = response.result.action;
 
                 if (isDefined(responseData) && isDefined(responseData.facebook)) {
@@ -86,6 +77,7 @@ function processEvent(event) {
                     }
                 } else if (isDefined(responseText)) {
                     console.log('Response as text message');
+                    updateDB(sender, );
                     // facebook API limit for text length is 320,
                     // so we must split message if needed
                     var splittedText = splitResponse(responseText);
@@ -102,6 +94,16 @@ function processEvent(event) {
         apiaiRequest.end();
     }
 }
+
+function updateDB () {
+  //Establishing connection to pg
+  pg.connect(process.env.DATABASE_URL, function(err, client) {
+    if (err) throw err;
+    console.log('Connected to postgres!');
+    client.query('INSERT INTO subscribers VALUES (sender_id, event_name);');
+  console.log('Reminder scheduled - User id:', sender_id, 'Event subscribed:', event_name);
+  }); 
+}  
 
 function splitResponse(str) {
     if (str.length <= 320) {
